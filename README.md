@@ -1,6 +1,6 @@
-#  Red Dead Nation Companions - A script for RedEM and VORP
+#  Red Dead Animal farming script - A script for VORP Framework
 
-## IMPORTANT: VORP users remember to set your framework in config.lua *and* .fxmanifest.lua
+## IMPORTANT: You can configurate a lot of things in this script using config.lua
 
 
 ## Preview
