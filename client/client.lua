@@ -134,6 +134,7 @@ Citizen.CreateThread(function()
 		-- MAIN MENU
 		if WarMenu.IsMenuOpened('main') then
 			if WarMenu.Button(_U('BuyAnimal')) then
+				WarMenu.SetTitle('buy_animal', _U('FarmShop'))
 				WarMenu.OpenMenu('buy_animal')
 			end
 			
