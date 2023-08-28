@@ -45,4 +45,5 @@ Locales['fr'] = {
     For = " pour ",
     AreNowInCouple = " sont maintenant en couple!",
     And = " et ",
+    IsDead = " est mort(e)...",
 }

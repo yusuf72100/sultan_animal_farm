@@ -252,7 +252,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(60000)
 		for i = 1, #currentPetPeds do
 			if Config.RaiseAnimal then
-				if currentPetPeds[i] then --Checking to see if your pet is active, not retriving and not hungry
+				if currentPetPeds[i] and not IsEntityDead( currentPetPeds[i] ) then --Checking to see if your pet is active, not retriving and not hungry
 					TriggerServerEvent('sultan_animal_farm:updateAnimalsServer')
 
 					-- SCALING ANIMAL
@@ -416,36 +416,64 @@ end
 Citizen.CreateThread(function()
     while true do
         Wait(0)
+
+		local ped = PlayerPedId()
+
+		-- ANIMAL DESPAWN WITH DISTANCE
+		for i = 1, #currentPetPeds do
+			local playerCoords = GetEntityCoords(ped)
+			local animalCoords = GetEntityCoords(currentPetPeds[i])
+
+			if GetDistanceBetweenCoords(playerCoords, animalCoords, true) > 100.0 then
+				TriggerEvent('sultan_animal_farm:removeanimal', Entity(currentPetPeds[i]).state.name)
+			end
+
+			if IsEntityDead( currentPetPeds[i]) and Config.PetAttributes.CompleteDeath == true then
+				TriggerServerEvent('sultan_animal_farm:deadAnimal', Entity(currentPetPeds[i]).state.name)
+				table.remove(currentPetPeds, i)
+				TriggerEvent('sultan_animal_farm:getanimals', false)
+			end
+		end
+
         local id = PlayerId()
         if IsPlayerTargettingAnything(id) then
             local result, entity = GetPlayerTargetEntity(id)
 			
-			updatePrompts(entity)
+			if not IsEntityDead( entity ) then
+				updatePrompts(entity)
 
-			if PromptHasStandardModeCompleted(GrazePrompt[entity]) then
-				grazing(entity, true)
-			end	
+				if PromptHasStandardModeCompleted(GrazePrompt[entity]) then
+					grazing(entity, true)
+				end	
 
-            if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
-				local ped = PlayerPedId()
-				PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
+				if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
+					local ped = PlayerPedId()
+					PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
 
-				if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
-					followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
-				else
-					followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
+					if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
+						followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
+					else
+						followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
+					end
+						
+					Wait(2000)
 				end
-					
-				Wait(2000)
-            end
-			
-            if PromptHasStandardModeCompleted(StayPrompt[entity]) then
-				petStay(entity)
-            end
+				
+				if PromptHasStandardModeCompleted(StayPrompt[entity]) then
+					petStay(entity)
+				end
 
-			if PromptHasHoldModeCompleted(RTHPrompt[entity]) then
-				returnToHome(Entity(entity).state.name)			
-			end	
+				if PromptHasHoldModeCompleted(RTHPrompt[entity]) then
+					returnToHome(Entity(entity).state.name)			
+				end	
+			
+			-- HIDING PROMPTS IF DEAD
+			else
+				PromptSetVisible(FollowPrompt[entity], false)
+				PromptSetVisible(StayPrompt[entity], false)
+				PromptSetVisible(RTHPrompt[entity], false)
+				PromptSetVisible(GrazePrompt[entity], false)
+			end
 		else
 			Wait(500)
         end
@@ -570,7 +598,7 @@ function AddRTHPrompt(entity)
     local group = Citizen.InvokeNative(0xB796970BD125FCE8, entity, Citizen.ResultAsLong()) -- PromptGetGroupIdForTargetEntity
     local str6 = _U('Despawn')
     RTHPrompt[entity] = PromptRegisterBegin()
-    PromptSetControlAction(RTHPrompt[entity], 0x8FD015D8)
+    PromptSetControlAction(RTHPrompt[entity], 0x6319DB71)
     str = CreateVarString(10, 'LITERAL_STRING', str6)
     PromptSetText(RTHPrompt[entity], str)
     PromptSetEnabled(RTHPrompt[entity], true)
@@ -625,7 +653,8 @@ AddEventHandler('sultan_animal_farm:removeanimal', function (name)
 			TriggerEvent('vorp:TipRight', _U('AllAnimalsReturnedToHome'), 4000)	
 		end
 	else
-		TriggerServerEvent("sultan_animal_farm:setActifValue, 'all', 0")
+		local all = 'all'
+		TriggerServerEvent('sultan_animal_farm:setActifValue', all, 0)
 	end
 end)
 
@@ -913,10 +942,10 @@ function spawnAnimals (model, player, x, y, z, h, skin, PlayerPedId, isdead, iss
 		AddStayPrompts(currentPetPeds[currentPetPedIndex])
 		
 		Citizen.InvokeNative(0x931B241409216C1F, player, currentPetPeds[currentPetPedIndex])
-		SetEntityCanBeDamagedByRelationshipGroup(currentPetPeds[currentPetPedIndex], false, GetHashKey("PLAYER"))
+		SetEntityCanBeDamagedByRelationshipGroup(currentPetPeds[currentPetPedIndex], Config.PetAttributes.FriendlyFire, GetHashKey("PLAYER"))
 
 		if Config.NoFear then
-			Citizen.InvokeNative(0x013A7BA5015C1372, currentPetPeds[currentPetPedIndex], true)
+			Citizen.InvokeNative(0x013A7BA5015C1372, currentPetPeds[currentPetPedIndex], false)
 			Citizen.InvokeNative(0x3B005FF0538ED2A9, currentPetPeds[currentPetPedIndex])
 			Citizen.InvokeNative(0xAEB97D84CDF3C00B, currentPetPeds[currentPetPedIndex], false)
 		end
@@ -1038,40 +1067,6 @@ AddEventHandler('sultan_animal_farm:spawnanimal', function (animal,skin,isInShop
 	end
 end)
 
-function GetClosestAnimalPed(playerPed, radius)
-	local playerCoords = GetEntityCoords(playerPed)
-
-	local itemset = CreateItemset(true)
-	local size = Citizen.InvokeNative(0x59B57C4B06531E1E, playerCoords, radius, itemset, 1, Citizen.ResultAsInteger())
-
-	local closestPed
-	local minDist = radius
-
-	if size > 0 then
-		for i = 0, size - 1 do
-			local ped = GetIndexedItemInItemset(i, itemset)
-			if playerPed ~= ped then
-			local pedType = GetPedType(ped)		  	
-			local model = GetEntityModel(ped)
-				if pedType == 28 and IsEntityDead(ped) and not RetrievedEntities[ped] and Config.Animals[model] then	
-					local pedCoords = GetEntityCoords(ped)
-					local distance = #(playerCoords - pedCoords)
-					if distance < minDist then
-						closestPed = ped
-						minDist = distance
-					end
-				end
-			end
-		end
-	end
-
-	if IsItemsetValid(itemset) then
-		DestroyItemset(itemset)
-	end
-
-	return closestPed
-end
-
 function SecondsToClock(seconds)
   local seconds = tonumber(seconds)
   if seconds <= 0 then
@@ -1104,10 +1099,9 @@ function SET_PED_OUTFIT_PRESET ( animal, preset )
 end
 
 
-
-AddEventHandler('onResourceStop', function(resource)
+AddEventHandler('onResourceStart', function(resource)
 	if resource == GetCurrentResourceName() then
-	TriggerEvent( 'sultan_animal_farm:removeanimal' )
+		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)
 		end		

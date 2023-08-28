@@ -64,15 +64,17 @@ Config.Volume = 0
 
 Config.PetAttributes = {
     FollowDistance = 5,
-    Invincible = true,
+    Invincible = false,
     SpawnLimiter = 1, -- Set this to limit how often a pet can be spawned or 0 to disable it
-    DeathCooldown = 300 -- Time before a pet can be respawned after dying
+    DeathCooldown = 300, -- Time before a pet can be respawned after dying
+    CompleteDeath = true,
+    FriendlyFire = true
 }
 
 -- Pets availability will only be limited if the object exists in the pet config.
 Config.Pets = {
     {
-        Text = "$200 - Porc",
+        Text = "$50 - Porc",
         SubText = "Porc",
         Desc = "Un gros porc",
         Param = {
@@ -84,7 +86,7 @@ Config.Pets = {
         CoupleWith = "Porc"
     },
     {
-        Text = "$200 - Coq",
+        Text = "$30 - Coq",
         SubText = "Coq",
         Desc = "Un petit coq",
         Param = {
@@ -96,7 +98,7 @@ Config.Pets = {
         CoupleWith = "Poule"                   -- ANIMAL TYPE WITH WHICH ONE ANIMAL CAN BE IN COUPLE
     },
     {
-        Text = "$200 - Poule",
+        Text = "$25 - Poule",
         SubText = "Poule",
         Desc = "Une petite poule",
         Param = {

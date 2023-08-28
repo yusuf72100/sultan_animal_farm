@@ -30,6 +30,19 @@ AddEventHandler('sultan_animal_farm:sellpet', function(name, difficulty, basepri
 	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , _U('YouSold') .. "~o~" .. name .. _U('For') .. amountmoney .. "$", "toast_awards_set_c", "awards_set_c_001", 4000)
 end)
 
+RegisterServerEvent('sultan_animal_farm:deadAnimal')
+AddEventHandler('sultan_animal_farm:deadAnimal', function(name)
+
+	local _src = source
+	local Character = VorpCore.getUser(_src).getUsedCharacter
+	local u_identifier = Character.identifier
+	local u_charid = Character.charIdentifier
+
+	exports.ghmattimysql:execute("DELETE FROM animal_farm WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", {["identifier"] = u_identifier, ['charidentifier'] = u_charid, ['name'] = name})
+	TriggerClientEvent('sultan_animal_farm:removeanimal', _src, name)
+	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , "~o~" .. name .. _U('IsDead'), "toast_awards_set_c", "awards_set_c_001", 4000)
+end)
+
 
 RegisterServerEvent('sultan_animal_farm:growUpAnimal')
 AddEventHandler('sultan_animal_farm:growUpAnimal', function(name)
@@ -160,7 +173,7 @@ AddEventHandler('sultan_animal_farm:setActifValue', function (name, value)
 	local Character = VorpCore.getUser(_src).getUsedCharacter
 	local u_identifier = Character.identifier
 	local u_charid = Character.charIdentifier
-	
+
 	if name ~= 'all' then
 		local Parameters = { ['identifier'] = u_identifier, ['charidentifier'] = u_charid,  ['value'] = value, ['name'] = name}
 		exports.ghmattimysql:execute("UPDATE animal_farm SET actif = @value WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", Parameters, function(result) end)
