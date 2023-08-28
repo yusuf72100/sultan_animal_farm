@@ -48,8 +48,11 @@ vorp_inventory
 
 ## TODO
 • Milk cows
+
 • Add a agressive state for some animals like bull
+
 • Add a animal boost craft and plant
+
 • Add ability to mount certain beasts
 
 ## Disclaimers and Credits
