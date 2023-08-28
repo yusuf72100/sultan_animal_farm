@@ -3,7 +3,7 @@
 
 Config = {}
 
-Config.Locale = "en"
+Config.Locale = "fr"
 
 Config.Framework = "vorp" -- IMPORTANT: Put either "redem" or "vorp" depending on your framework. VORP users need to also change the Convar in .fxmanifest !!
 

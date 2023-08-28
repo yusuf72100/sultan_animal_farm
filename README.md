@@ -4,50 +4,39 @@
 
 
 ## Preview
-https://streamable.com/e4zzz2
+https://youtu.be/ullux0Nfcew
 
 ## Description
 
-With this script players are able to own pets that can retrieve hunted prey, track targets or even attack your enemies. Pets need to be raised as well as require food every so often and won't retrieve hunted prey if they are hungry. Pets can be set to automatically hostile targets that attack you as well. Simply look at your pet and hold right-click to access the many different options. Doing the same on other targets will show you their attack/track prompts.
+With this script players are able to down beasts, grow up them and sell them depending of them quality and reproduct them with an other animal (reproduction is completly random and depend of beasts quality).
 
 ## Features
 
-• Purchase pets
+• Purchase beats
 
-• Raise pets by feeding them when they're hungry
+• Raise beats by grazing him
 
-• Pets will grow in size as they get older
+• Beats will grow in size as they get older
 
-• Full grown pets gain new abilities
+• Random beast quality system
 
-• Give commands like sit and follow
+• Sell beats (depending of then quality)
 
-• Pets can retrieve hunted animals (Hunt Mode)
+• Reproduction of beats (random system)
 
-• Pets can be set to track targets
+• Full grown beats gain new abilities
 
-• Pets can be set to attack targets
-
-• Pets will hostile anyone in combat with owner
-
-• Hungry pets won't retrieve
-
-• /callpet to spawn your pet
-
-• /fleepet to make your pet flee
-
-• Optimized - Idles at 0.01ms with pet out	
-
-• Almost everything can be toggled in the config
+• You can change almost EVERYTHING in config file
 
 • Locale config.
     - Currently supports [en]
+    - Currently supports [fr]
 
 
 ## How to Install
-1. Put rdn_companions in your `resources` folder
-2. Enter `ensure rdn_companions` in your server.cfg
-3. Import the `companions.sql`
+1. Put sultan_animal_farm in your `resources` folder
+2. Enter `ensure sultan_animal_farm` in your server.cfg
+3. Import the `animal_farm.sql`
 4. Go through `config.lua` before restarting your server
 
 ## Dependencies
@@ -58,7 +47,10 @@ redemrp inventory 2.0
 vorp_inventory
 
 ## TODO
-• Add human peds with the ability to outfit them, make them guard areas, etc
+• Milk cows
+• Add a agressive state for some animals like bull
+• Add a animal boost craft and plant
+• Add ability to mount certain beasts
 
 ## Disclaimers and Credits
-- This is a heavy modification of [bwrp_animalshelter](https://github.com/nerakhon/bwrp_animalshelter) (Made by nerakhon)]
+- This is a heavy modification of [rdn_companions](https://github.com/outsider31000/rdn_companions) (Made by Outsider)]
