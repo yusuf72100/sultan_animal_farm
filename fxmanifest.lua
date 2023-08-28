@@ -20,6 +20,7 @@ shared_scripts {
     'config.lua',
 	'locale.lua',
 	'locales/fr.lua',
+    'locales/en.lua',
 }
 
 
