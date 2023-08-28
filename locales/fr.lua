@@ -46,4 +46,5 @@ Locales['fr'] = {
     AreNowInCouple = " sont maintenant en couple!",
     And = " et ",
     IsDead = " est mort(e)...",
+    FarmShop = "Ferme"
 }

@@ -373,7 +373,7 @@ function reproduction(male, female)
 	
 end
 
-function updatePrompts(entity)
+function updatePrompts(entity, player_coords, restricted_towns)
 
 	-- FOLLOW PROMPT TEXT
 	if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
@@ -385,12 +385,16 @@ function updatePrompts(entity)
 	end
 
 	-- GRAZING PROMPT
-	if Entity(entity).state.grazing == false then
-		PromptSetVisible(GrazePrompt[entity], true)
-		
-	elseif Entity(entity).state.grazing == true then
+	if not isInRestrictedTown(restricted_towns, player_coords) then
+		if Entity(entity).state.grazing == false then
+			PromptSetVisible(GrazePrompt[entity], true)
+			
+		elseif Entity(entity).state.grazing == true then
+			PromptSetVisible(GrazePrompt[entity], false)
+		end
+	else 
+		Entity(entity).state.grazing = false
 		PromptSetVisible(GrazePrompt[entity], false)
-
 	end
 
 	-- STAY PROMPT
@@ -408,7 +412,6 @@ function updatePrompts(entity)
 		
 	else
 		PromptSetVisible(RTHPrompt[entity], false)
-		
 	end
 end
 
@@ -416,12 +419,12 @@ end
 Citizen.CreateThread(function()
     while true do
         Wait(0)
-
+		local restricted_towns = convertConfigTownRestrictionsToHashRegister()
 		local ped = PlayerPedId()
+		local playerCoords = GetEntityCoords(ped)
 
 		-- ANIMAL DESPAWN WITH DISTANCE
 		for i = 1, #currentPetPeds do
-			local playerCoords = GetEntityCoords(ped)
 			local animalCoords = GetEntityCoords(currentPetPeds[i])
 
 			if GetDistanceBetweenCoords(playerCoords, animalCoords, true) > 100.0 then
@@ -440,13 +443,13 @@ Citizen.CreateThread(function()
             local result, entity = GetPlayerTargetEntity(id)
 			
 			if not IsEntityDead( entity ) then
-				updatePrompts(entity)
+				updatePrompts(entity, playerCoords, restricted_towns)
 
 				if PromptHasStandardModeCompleted(GrazePrompt[entity]) then
 					grazing(entity, true)
 				end	
 
-				if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
+					if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
 					local ped = PlayerPedId()
 					PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
 
@@ -519,8 +522,18 @@ function animalEatAnimation(entity)
 	if Entity(entity).state.animal == 'A_C_Pig_01' then
 		dict = "amb_creature_mammal@world_pig_grazing@base"
 
-	elseif Entity(entity).state.animal == 'A_C_rooster_01' or Entity(currentPetPed).state.animal == 'A_C_chicken_01' then
+	elseif Entity(entity).state.animal == 'A_C_rooster_01' or Entity(entity).state.animal == 'A_C_chicken_01' then
 		dict = "amb_creatures_bird@world_rooster_eating@base"
+
+	elseif Entity(entity).state.animal == 'a_c_bull_01' then
+		dict = "amb_creature_mammal@world_bull_grazing@base"
+
+	elseif Entity(entity).state.animal == 'a_c_cow' then
+		dict = "amb_creature_mammal@world_cow_grazing@base"
+
+	elseif Entity(entity).state.animal == 'a_c_sheep_01' then
+		dict = "amb_creature_mammal@world_sheep_grazing@base"
+	
 	end
 
 	RequestAnimDict(dict)
@@ -533,19 +546,27 @@ function animalEatAnimation(entity)
 		end      
 	end
 
-	local coordspet = GetEntityCoords(entity)
 	TaskPlayAnim(entity, dict, "base", 1.0, 8.0, -1, 1, 0, false, false, false)
 end
 
 function animalStayAnimation(currentPetPed)
-	local waiting = 0
 	local dict = ""
+	local waiting = 0
 
 	if Entity(currentPetPed).state.animal == 'A_C_Pig_01' then
 		dict = "amb_creature_mammal@world_pig_sleeping@base"
 
 	elseif Entity(currentPetPed).state.animal == 'A_C_rooster_01' or Entity(currentPetPed).state.animal == 'A_C_chicken_01' then
 		dict = "amb_creatures_bird@world_chicken_eating_sitting@base"
+	
+	elseif Entity(currentPetPed).state.animal == 'a_c_bull_01' then
+		dict = "amb_creature_mammal@world_bull_sleeping@base"
+
+	elseif Entity(currentPetPed).state.animal == 'a_c_cow' then
+		dict = "amb_creature_mammal@world_cow_sleeping@base"
+		
+	elseif Entity(currentPetPed).state.animal == 'a_c_sheep_01' then
+		dict = "amb_creature_mammal@world_sheep_sleeping@base"
 	end
 
 	RequestAnimDict(dict)
@@ -620,6 +641,27 @@ function AddGrazePrompt(entity)
 	PromptSetStandardMode(GrazePrompt[entity], true)
 	PromptSetGroup(GrazePrompt[entity], group)
 	PromptRegisterEnd(GrazePrompt[entity])
+end
+
+function GetTown(x, y, z)
+    return Citizen.InvokeNative(0x43AD8FC02B429D33, x, y, z, 1)
+end
+
+function isInRestrictedTown(restricted_towns, player_coords)
+    player_coords = player_coords or GetEntityCoords(PlayerPedId())
+
+    local x, y, z = table.unpack(player_coords)
+    local town_hash = GetTown(x, y, z)
+
+    if town_hash == false then
+        return false
+    end
+
+    if restricted_towns[town_hash] then
+        return true
+    end
+
+    return false
 end
 
 -- | Notification | --
@@ -757,13 +799,25 @@ function followMother(child, mother)
 end
 
 function petStay(currentPetPed)
-local coords = GetEntityCoords(currentPetPed)
 	Entity(currentPetPed).state.stay = true
 	Entity(currentPetPed).state.grazing = false
 	ClearPedTasks(currentPetPed)
 	ClearPedSecondaryTask(currentPetPed)
 	animalStayAnimation(currentPetPed)
 	FreezeEntityPosition(currentPetPed,true)
+end
+
+function convertConfigTownRestrictionsToHashRegister()
+    local restricted_towns = {}
+
+    for _, town_restriction in pairs(Config.TownRestrictions) do
+        if not town_restriction.grazing_allowed then
+            local town_hash = GetHashKey(town_restriction.name)
+            restricted_towns[town_hash] = town_restriction.name
+        end
+    end
+
+    return restricted_towns
 end
 
 RegisterNetEvent('sultan_animal_farm:ConfirmSelling')
@@ -1107,4 +1161,15 @@ AddEventHandler('onResourceStart', function(resource)
 		end		
 	end
 end)
+
+
+AddEventHandler('onResourceStop', function(resource)
+	if resource == GetCurrentResourceName() then
+		TriggerEvent( 'sultan_animal_farm:removeanimal' )
+		if fetchedObj ~= nil then
+			DeleteEntity(fetchedObj)
+		end		
+	end
+end)
+
 
