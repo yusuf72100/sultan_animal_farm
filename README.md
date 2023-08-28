@@ -56,4 +56,4 @@ vorp_inventory
 • Add ability to mount certain beasts
 
 ## Disclaimers and Credits
-- This is a heavy modification of [rdn_companions](https://github.com/outsider31000/rdn_companions) (Made by Outsider)]
+- This is a heavy modification of [rdn_companions](https://github.com/outsider31000/rdn_companions) (Edited by Outsider)]
