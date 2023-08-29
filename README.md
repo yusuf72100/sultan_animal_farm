@@ -52,9 +52,9 @@ vorp_inventory
 
 • Milk cows
 
-• Add a agressive state for some animals like bull
+• Add an agressive state for some animals like bull
 
-• Add a animal boost craft and plant
+• Add an animal boost craft and plant
 
 • Add ability to mount certain beasts
 
