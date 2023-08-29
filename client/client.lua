@@ -451,17 +451,17 @@ Citizen.CreateThread(function()
 				end	
 
 					if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
-					local ped = PlayerPedId()
-					PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
+						local ped = PlayerPedId()
+						PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
 
-					if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
-						followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
-					else
-						followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
-					end
+						if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
+							followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
+						else
+							followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
+						end
 						
-					Wait(2000)
-				end
+						Wait(2000)
+					end
 				
 				if PromptHasStandardModeCompleted(StayPrompt[entity]) then
 					petStay(entity)
@@ -506,12 +506,12 @@ function grazing(entity, bool)
 			Entity(entity).state.grazing = true
 			Entity(entity).state.stay = false
 		end
-	else	--false
+	else
 		if Entity(entity).state.grazing == true then
 			Entity(entity).state.grazing = false
 		end
 	end
-
+	FreezeEntityPosition(entity,true)
 	animalEatAnimation(entity)
 end
 
