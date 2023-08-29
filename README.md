@@ -12,19 +12,21 @@ With this script players are able to down beasts, grow up them and sell them dep
 
 ## Features
 
-• Purchase beats
+• Purchase beasts
 
-• Raise beats by grazing him
+• Raise beasts by grazing him
+
+• Prohibition of grazing into the towns
 
 • Beats will grow in size as they get older
 
 • Random beast quality system
 
-• Sell beats (depending of then quality)
+• Sell beasts (depending of them quality)
 
-• Reproduction of beats (random system)
+• Reproduction of beasts (random system)
 
-• Full grown beats gain new abilities
+• Full grown beasts gain new abilities
 
 • You can change almost EVERYTHING in config file
 
