@@ -503,15 +503,16 @@ end
 function grazing(entity, bool)
 	if bool == true then
 		if Entity(entity).state.grazing == false then
+			FreezeEntityPosition(entity,true)
 			Entity(entity).state.grazing = true
 			Entity(entity).state.stay = false
 		end
 	else
 		if Entity(entity).state.grazing == true then
+			FreezeEntityPosition(entity,false)
 			Entity(entity).state.grazing = false
 		end
 	end
-	FreezeEntityPosition(entity,true)
 	animalEatAnimation(entity)
 end
 
