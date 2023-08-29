@@ -50,7 +50,7 @@ vorp_inventory
 
 ## TODO
 
-• Milk cows
+• Add ability to milk cows
 
 • Add an agressive state for some animals like bull
 
