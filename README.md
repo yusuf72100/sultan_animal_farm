@@ -30,6 +30,8 @@ With this script players are able to down beasts, grow up them and sell them dep
 
 • You can change almost EVERYTHING in config file
 
+• WORKING ONLY WITH VORP
+
 • Locale config.
     - Currently supports [en]
     - Currently supports [fr]
@@ -42,8 +44,6 @@ With this script players are able to down beasts, grow up them and sell them dep
 4. Go through `config.lua` before restarting your server
 
 ## Dependencies
-• RedEM:RP
-redemrp inventory 2.0
 
 • VORP
 vorp_inventory
