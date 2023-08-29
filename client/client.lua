@@ -20,18 +20,45 @@ local GrazePrompt = {}
 local StayPrompt = {}
 local FollowPrompt = {}
 local PlayerJob = nil
+local currentBlips = {}
+
+function DeleteBlips()
+	for i = 1, #currentBlips do
+		RemoveBlip(currentBlips[i])
+		currentBlips = {}
+	end  
+end
+
+function AddBlips()
+	local i = 1
+	currentBlips = {}
+	
+	for _, info in pairs(Config.Shops) do
+		local binfo = info.Blip
+		local blip = N_0x554d9d53f696d002(1664425300, binfo.x, binfo.y, binfo.z)
+		SetBlipSprite(blip, binfo.sprite, 1)
+		SetBlipScale(blip, 0.2)
+		Citizen.InvokeNative(0x9CB1A1623062F402, blip, info.Name)
+		Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_MP_COLOR_6'))
+
+		currentBlips[i] = blip
+		i = i + 1 
+	end 
+end
 
 Citizen.CreateThread(function()
-	for _, info in pairs(Config.Shops) do
-		if Config.NeedJob == true and PlayerJob == Config.Job or Config.NeedJob == false then
-			local binfo = info.Blip
-			local blip = N_0x554d9d53f696d002(1664425300, binfo.x, binfo.y, binfo.z)
-			SetBlipSprite(blip, binfo.sprite, 1)
-			SetBlipScale(blip, 0.2)
-			Citizen.InvokeNative(0x9CB1A1623062F402, blip, info.Name)
-			Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_MP_COLOR_6'))
-		end
-    end  
+	if Config.NeedJob == true and Config.Job == PlayerJob then
+		for _, info in pairs(Config.Shops) do
+			if Config.NeedJob == true and PlayerJob == Config.Job or Config.NeedJob == false then
+				local binfo = info.Blip
+				local blip = N_0x554d9d53f696d002(1664425300, binfo.x, binfo.y, binfo.z)
+				SetBlipSprite(blip, binfo.sprite, 1)
+				SetBlipScale(blip, 0.2)
+				Citizen.InvokeNative(0x9CB1A1623062F402, blip, info.Name)
+				Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_MP_COLOR_6'))
+			end
+		end  
+	end
 end)
 
 
@@ -430,9 +457,16 @@ Citizen.CreateThread(function()
     while true do
         Wait(0)
 		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
+
 		local restricted_towns = convertConfigTownRestrictionsToHashRegister()
 		local ped = PlayerPedId()
 		local playerCoords = GetEntityCoords(ped)
+
+		if Config.NeedJob == true and Config.Job ~= PlayerJob then
+			DeleteBlips()
+		elseif #currentBlips <= 0 then 
+			AddBlips()
+		end
 
 		-- ANIMAL DESPAWN WITH DISTANCE
 		for i = 1, #currentPetPeds do
