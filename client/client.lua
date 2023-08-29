@@ -246,7 +246,7 @@ Citizen.CreateThread(function()
 	end
 end)
 
--- | ANIMALS GROWING AND COUPLING THREAD | --
+-- | ANIMALS GROWING, SCALING AND COUPLING THREAD | --
 
 Citizen.CreateThread(function()
 	while true do
@@ -273,7 +273,7 @@ Citizen.CreateThread(function()
 
 							if Entity(currentPetPeds[i]).state.timer > 0 then
 								print("Got it! " .. Entity(currentPetPeds[i]).state.name .. " timer : " .. Entity(currentPetPeds[i]).state.timer)
-								Entity(currentPetPeds[i]).state.timer = Entity(currentPetPeds[i]).state.timer -1
+								Entity(currentPetPeds[i]).state.timer = Entity(currentPetPeds[i]).state.timer - 1
 							end
 
 							if Entity(currentPetPeds[i]).state.timer <= 0 then
@@ -301,8 +301,9 @@ Citizen.CreateThread(function()
 						elseif Entity(currentPetPeds[i]).state.searchCouple == true and Entity(currentPetPeds[i]).state.sex == 'male' then
 							for j = 1, #currentPetPeds do
 								if Entity(currentPetPeds[j]).state.searchCouple == true and Entity(currentPetPeds[j]).state.sex ~= Entity(currentPetPeds[i]).state.sex and findAnimalCoupleWith(Entity(currentPetPeds[i]).state.animaltype) == Entity(currentPetPeds[j]).state.animaltype then
-									local luck = math.random(Entity(currentPetPeds[i]).state.difficulty + Entity(currentPetPeds[j]).state.difficulty)
-									if luck == Entity(currentPetPeds[i]).state.difficulty + Entity(currentPetPeds[j]).state.difficulty then
+									
+									local luck = math.random(Entity(currentPetPeds[i]).state.difficulty * Entity(currentPetPeds[j]).state.difficulty)
+									if luck == Entity(currentPetPeds[i]).state.difficulty * Entity(currentPetPeds[j]).state.difficulty then
 										Entity(currentPetPeds[i]).state.searchCouple = false
 										Entity(currentPetPeds[j]).state.searchCouple = false
 										Entity(currentPetPeds[i]).state.couple = Entity(currentPetPeds[j]).state.name
