@@ -90,6 +90,16 @@ AddEventHandler('sultan_animal_farm:setCouple', function(name, couple)
 	end)	
 end)
 
+RegisterServerEvent('sultan_animal_farm:GetPlayerJob')
+AddEventHandler('sultan_animal_farm:GetPlayerJob', function()
+    local _source = source
+    local Character = VorpCore.getUser(_source).getUsedCharacter
+    local CharacterJob = Character.job
+
+    TriggerClientEvent('sultan_animal_farm:SendPlayerJob', _source, CharacterJob)
+
+end)
+
 RegisterServerEvent('sultan_animal_farm:getChild')
 AddEventHandler('sultan_animal_farm:getChild', function (name, animaltype, animal, mothername, mother_difficulty, dad_difficulty, sex)
     local _src = source

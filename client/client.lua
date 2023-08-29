@@ -19,17 +19,18 @@ local RTHPrompt = {}
 local GrazePrompt = {}
 local StayPrompt = {}
 local FollowPrompt = {}
-local AddedAttackPrompt = {} -- Add the entities you've already targeted so it doesn't try adding the prompt over and over again. 
-local AddedTrackPrompt = {} -- Add the entities you've already targeted so it doesn't try adding the prompt over and over again. 
+local PlayerJob = nil
 
 Citizen.CreateThread(function()
 	for _, info in pairs(Config.Shops) do
-		local binfo = info.Blip
-        local blip = N_0x554d9d53f696d002(1664425300, binfo.x, binfo.y, binfo.z)
-        SetBlipSprite(blip, binfo.sprite, 1)
-		SetBlipScale(blip, 0.2)
-		Citizen.InvokeNative(0x9CB1A1623062F402, blip, info.Name)
-		Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_MP_COLOR_6'))
+		if Config.NeedJob == true and PlayerJob == Config.Job or Config.NeedJob == false then
+			local binfo = info.Blip
+			local blip = N_0x554d9d53f696d002(1664425300, binfo.x, binfo.y, binfo.z)
+			SetBlipSprite(blip, binfo.sprite, 1)
+			SetBlipScale(blip, 0.2)
+			Citizen.InvokeNative(0x9CB1A1623062F402, blip, info.Name)
+			Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_MP_COLOR_6'))
+		end
     end  
 end)
 
@@ -210,20 +211,27 @@ Citizen.CreateThread(function()
 	until false
 end)
 
+RegisterNetEvent("sultan_animal_farm:SendPlayerJob")
+AddEventHandler("sultan_animal_farm:SendPlayerJob", function(Job)
+	PlayerJob = Job
+end)
+
 Citizen.CreateThread(function()
 	-- OPEN SHOW 
 	while true do
 		waitTime = 500
 		for index, shop in pairs(Config.Shops) do
-			local IsZone, IdZone = IsNearZone( shop.Coords, shop.ActiveDistance, shop.Ring )
-			-- Shop control and menu open
-			if IsZone then
-				waitTime = 1
-				DisplayHelp(_U('Shoptext'), 0.50, 0.95, 0.6, 0.6, true, 255, 255, 255, 255, true)
-				if IsControlJustPressed(0, keys[Config.TriggerKeys.OpenShop]) then
-					WarMenu.SetTitle('main', shop.Name)
-					WarMenu.OpenMenu('main')
-					CurrentZoneActive = index
+			-- JOB CHECK
+			if Config.NeedJob == true and PlayerJob == Config.Job or Config.NeedJob == false then
+				local IsZone, IdZone = IsNearZone( shop.Coords, shop.ActiveDistance, shop.Ring )
+				if IsZone then
+					waitTime = 1
+					DisplayHelp(_U('Shoptext'), 0.50, 0.95, 0.6, 0.6, true, 255, 255, 255, 255, true)
+					if IsControlJustPressed(0, keys[Config.TriggerKeys.OpenShop]) then
+						WarMenu.SetTitle('main', shop.Name)
+						WarMenu.OpenMenu('main')
+						CurrentZoneActive = index
+					end
 				end
 			end
 		end
@@ -421,6 +429,7 @@ end
 Citizen.CreateThread(function()
     while true do
         Wait(0)
+		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
 		local restricted_towns = convertConfigTownRestrictionsToHashRegister()
 		local ped = PlayerPedId()
 		local playerCoords = GetEntityCoords(ped)
@@ -1158,6 +1167,7 @@ end
 
 AddEventHandler('onResourceStart', function(resource)
 	if resource == GetCurrentResourceName() then
+		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
 		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)
@@ -1168,6 +1178,7 @@ end)
 
 AddEventHandler('onResourceStop', function(resource)
 	if resource == GetCurrentResourceName() then
+		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
 		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)

@@ -46,6 +46,9 @@ Config.NotifyWhenHungry = true -- Puts up a little notification letting you know
 Config.AnimalMaxDifficulty = 5  -- How harder can an animal be to farm
 Config.AnimalCouplingDifficulty = 5 -- How rare is the animal coupling event
 
+Config.Job = "shepherd"
+Config.NeedJob = true
+
 Config.Shops = {
     {
         Name = 'Farm',
