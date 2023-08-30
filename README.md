@@ -49,6 +49,8 @@ With this script players are able to down beasts, grow up them and sell them dep
 
 ## TODO
 
+• Chicken coop
+
 • Add ability to milk cows
 
 • Add an agressive state for some animals like bull
