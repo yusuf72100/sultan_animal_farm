@@ -477,9 +477,8 @@ Citizen.CreateThread(function()
 			if currentPetPeds[i] then
 				if GetDistanceBetweenCoords(playerCoords, animalCoords, true) > 100.0 then
 					TriggerEvent('sultan_animal_farm:removeanimal', Entity(currentPetPeds[i]).state.name)
-				end
 
-				if IsEntityDead( currentPetPeds[i]) and Config.PetAttributes.CompleteDeath == true then
+				elseif IsEntityDead( currentPetPeds[i]) and Config.PetAttributes.CompleteDeath == true then
 					TriggerServerEvent('sultan_animal_farm:deadAnimal', Entity(currentPetPeds[i]).state.name)
 					table.remove(currentPetPeds, i)
 					TriggerEvent('sultan_animal_farm:getanimals', false)
