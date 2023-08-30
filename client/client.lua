@@ -424,31 +424,33 @@ function updatePrompts(entity, player_coords, restricted_towns)
 	-- GRAZING PROMPT
 	if not isInRestrictedTown(restricted_towns, player_coords) then
 		if Entity(entity).state.grazing == false then
-			PromptSetVisible(GrazePrompt[entity], true)
+			PromptSetEnabled(GrazePrompt[entity], true)
 			
 		elseif Entity(entity).state.grazing == true then
-			PromptSetVisible(GrazePrompt[entity], false)
+			PromptSetEnabled(GrazePrompt[entity], false)
 		end
 	else 
 		Entity(entity).state.grazing = false
-		PromptSetVisible(GrazePrompt[entity], false)
+		PromptSetEnabled(GrazePrompt[entity], false)
 	end
 
 	-- STAY PROMPT
 	if Entity(entity).state.stay == false then
-		PromptSetVisible(StayPrompt[entity], true)
+		PromptSetEnabled(StayPrompt[entity], true)
 		
 	elseif Entity(entity).state.stay == true then
-		PromptSetVisible(StayPrompt[entity], false)
+		PromptSetEnabled(StayPrompt[entity], false)
 		
 	end
 
 	-- RTH PROMPT
 	if Entity(entity).state.xp >= Config.FullGrownXp then
 		PromptSetVisible(RTHPrompt[entity], true)
+		PromptSetEnabled(RTHPrompt[entity], true)
 		
 	else
 		PromptSetVisible(RTHPrompt[entity], false)
+		PromptSetEnabled(RTHPrompt[entity], false)
 	end
 end
 
@@ -487,25 +489,24 @@ Citizen.CreateThread(function()
         if IsPlayerTargettingAnything(id) then
             local result, entity = GetPlayerTargetEntity(id)
 			
-			if not IsEntityDead( entity ) then
+			if not IsEntityDead( entity ) and checkIfBeast(entity) == true then
 				updatePrompts(entity, playerCoords, restricted_towns)
 
 				if PromptHasStandardModeCompleted(GrazePrompt[entity]) then
 					grazing(entity, true)
 				end	
+				if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
+					local ped = PlayerPedId()
+					PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
 
-					if PromptHasStandardModeCompleted(FollowPrompt[entity]) then
-						local ped = PlayerPedId()
-						PlaySoundFrontend("ALERT_WHISTLE_01", "GAROA_Sounds", true, 1)
-
-						if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
-							followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
-						else
-							followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
-						end
-						
-						Wait(2000)
+					if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
+						followMother(entity, currentPetPeds[findPed(Entity(entity).state.mother)]) 
+					else
+						followOwner(currentPetPeds[findPed(Entity(entity).state.name)], ped, false)
 					end
+					
+					Wait(2000)
+				end
 				
 				if PromptHasStandardModeCompleted(StayPrompt[entity]) then
 					petStay(entity)
@@ -517,6 +518,11 @@ Citizen.CreateThread(function()
 			
 			-- HIDING PROMPTS IF DEAD
 			else
+				PromptSetEnabled(FollowPrompt[entity], false)
+				PromptSetEnabled(StayPrompt[entity], false)
+				PromptSetEnabled(RTHPrompt[entity], false)
+				PromptSetEnabled(GrazePrompt[entity], false)
+
 				PromptSetVisible(FollowPrompt[entity], false)
 				PromptSetVisible(StayPrompt[entity], false)
 				PromptSetVisible(RTHPrompt[entity], false)
@@ -528,12 +534,23 @@ Citizen.CreateThread(function()
     end
 end)
 
+function checkIfBeast(entity)
+	for i = 1, #currentPetPeds do
+		if currentPetPeds[i] == entity then
+			return true
+		end
+	end
+
+	return false
+end
+
 function findPed(name)
 	for i = 1, #currentPetPeds do
 		if Entity(currentPetPeds[i]).state.name == name then
 			return i
 		end
 	end
+	return false
 end
 
 function findAnimal(name)
@@ -1202,9 +1219,6 @@ end
 
 
 AddEventHandler('onResourceStart', function(resource)
-	currentPetPeds = {}
-	MyAnimalsTable = {}
-	TriggerServerEvent('sultan_animal_farm:getanimals', false)
 	if resource == GetCurrentResourceName() then
 		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
 		if fetchedObj ~= nil then
@@ -1215,9 +1229,6 @@ end)
 
 
 AddEventHandler('onResourceStop', function(resource)
-	currentPetPeds = {}
-	MyAnimalsTable = {}
-	TriggerServerEvent('sultan_animal_farm:getanimals', false)
 	if resource == GetCurrentResourceName() then
 		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
