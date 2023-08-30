@@ -3,7 +3,7 @@
 
 Config = {}
 
-Config.Locale = "en"
+Config.Locale = "fr"
 
 Config.Framework = "vorp" -- IMPORTANT: Put either "redem" or "vorp" depending on your framework. VORP users need to also change the Convar in .fxmanifest !!
 
@@ -47,7 +47,7 @@ Config.AnimalMaxDifficulty = 5  -- How harder can an animal be to farm
 Config.AnimalCouplingDifficulty = 5 -- How rare is the animal coupling event
 
 Config.Job = "shepherd"
-Config.NeedJob = true
+Config.NeedJob = false
 
 Config.Shops = {
     {

@@ -964,11 +964,13 @@ end)
 RegisterNetEvent('sultan_animal_farm:drawMyAnimalsMenu')
 AddEventHandler('sultan_animal_farm:drawMyAnimalsMenu', function(animals)
 	WarMenu.OpenMenu('my_animals')
+	MyAnimalsTable = {}
 	MyAnimalsTable = animals
 end)
 
 RegisterNetEvent('sultan_animal_farm:UpdateAnimalsClient')
 AddEventHandler('sultan_animal_farm:UpdateAnimalsClient', function(animals)
+	MyAnimalsTable = {}
 	MyAnimalsTable = animals
 	
 	for i = 1, #MyAnimalsTable do
@@ -1200,9 +1202,11 @@ end
 
 
 AddEventHandler('onResourceStart', function(resource)
+	currentPetPeds = {}
+	MyAnimalsTable = {}
+	TriggerServerEvent('sultan_animal_farm:getanimals', false)
 	if resource == GetCurrentResourceName() then
 		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
-		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)
 		end		
@@ -1211,8 +1215,10 @@ end)
 
 
 AddEventHandler('onResourceStop', function(resource)
+	currentPetPeds = {}
+	MyAnimalsTable = {}
+	TriggerServerEvent('sultan_animal_farm:getanimals', false)
 	if resource == GetCurrentResourceName() then
-		TriggerServerEvent("sultan_animal_farm:GetPlayerJob")
 		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)
