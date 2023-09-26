@@ -90,76 +90,82 @@ Config.TownRestrictions = {
 -- Pets availability will only be limited if the object exists in the pet config.
 Config.Pets = {
     {
-        Text = "$50 - Pork",
-        SubText = "Pork",
+        Text = "$50 - Porc",
+        SubText = "Porc",
         Desc = "A big fat Pork",
         Param = {
             Price = 50,
             Model = "A_C_Pig_01",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Male", "Female"},            -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Pork"
+        Sex = {"male", "female"},            -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Pork",
+        img = "Pork_animal"
     },
     {
-        Text = "$30 - Rooster",
-        SubText = "Rooster",
+        Text = "$30 - Coq",
+        SubText = "Coq",
         Desc = "A elegant rooster",
         Param = {
             Price = 30,
             Model = "A_C_rooster_01",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Male"},                       -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Chicken"                   -- ANIMAL TYPE WITH WHICH ONE ANIMAL CAN BE IN COUPLE
+        Sex = {"male"},                       -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Chicken",                   -- ANIMAL TYPE WITH WHICH ONE ANIMAL CAN BE IN COUPLE
+        img = "Rooster_animal"
     },
     {
-        Text = "$25 - Chicken",
-        SubText = "Chicken",
+        Text = "$25 - Poule",
+        SubText = "Poule",
         Desc = "A small Chicken",
         Param = {
             Price = 25,
             Model = "A_C_chicken_01",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Rooster"
+        Sex = {"female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Rooster",
+        img = "Chicken_animal"
     },
     {
-        Text = "$85 - Cow",
-        SubText = "Cow",
+        Text = "$85 - Vache",
+        SubText = "Vache",
         Desc = "An imposing cow",
         Param = {
             Price = 85,
             Model = "a_c_cow",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Bull"
+        Sex = {"female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Bull",
+        img = "Cow_animal"
     },
     {
-        Text = "$110 - Bull",
-        SubText = "Bull",
+        Text = "$110 - Toreau",
+        SubText = "Toreau",
         Desc = "A angry Bull",
         Param = {
             Price = 110,
             Model = "a_c_bull_01",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Male"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Bull"
+        Sex = {"male"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Bull",
+        img = "Bull_animal"
     },
     {
-        Text = "$45 - Sheep",
-        SubText = "Sheep",
+        Text = "$45 - Moutton",
+        SubText = "Moutton",
         Desc = "A soft Sheep",
         Param = {
             Price = 45,
             Model = "a_c_sheep_01",           -- DON'T TOUCH OR IT DON'T GONNA WORK !
             Level = 1
         },
-        Sex = {"Male", "Female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
-        CoupleWith = "Sheep"
+        Sex = {"male", "female"},                    -- WRITE WHICH SEX YOU WANT FOR THAT ANIMAL
+        CoupleWith = "Sheep",
+        img = "Sheep_animal"
     },
 }
 

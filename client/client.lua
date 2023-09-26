@@ -21,6 +21,8 @@ local StayPrompt = {}
 local FollowPrompt = {}
 local PlayerJob = nil
 local currentBlips = {}
+local VORPMenu = {} -- local 
+local imgPathMenu = "<img style='max-height:120px;max-width:120px; float: center;' src='nui://vorp_inventory/html/img/items/%s.png'><br>"
 
 function DeleteBlips()
 	for i = 1, #currentBlips do
@@ -150,6 +152,215 @@ local function checkAvailability(pet)
 end
 
 -------------------------------------------------------- MENUS ----------------------------------------------------------------------
+TriggerEvent("menuapi:getData",function(cb)
+	VORPMenu = cb
+end)
+   
+function MainMenu()
+	local elements = {}
+
+	elements = {
+		{
+			label =  _U('Buying'),
+			value = "buying",
+			desc = _U('Buying')
+		},
+
+		{
+			label =  _U('MyAnimals'),
+			value = "my_animals",
+			desc = _U('MyAnimals')
+		},
+	}
+
+	VORPMenu.Open('default', GetCurrentResourceName(), 'menuapi',
+		{
+			title    = _U('Animals'),
+			subtext  = _U('Animals'),
+			align    = "top-center",
+			elements = elements,
+		},
+
+		function(data, menu)
+			if (data.current.value == 'my_animals') then
+				TriggerServerEvent('sultan_animal_farm:getanimals', true)
+
+			elseif (data.current.value == 'buying') then
+				BuyAnimalsMenu()
+			end
+		end,
+
+    function(data, menu)
+        menu.close()
+    end)
+end 
+
+function MyAnimalsMenu()
+	local elements = {}
+
+	for i = 1, #MyAnimalsTable do
+		local animalType = MyAnimalsTable[i].animaltype
+		local imgValue
+
+		-- searching image of animal
+		for i, pet in pairs(Config.Pets) do
+			if Config.Pets[i].SubText == animalType then
+				imgValue = pet.img
+				break  
+			end
+		end
+
+		elements[#elements + 1] = {
+			label = MyAnimalsTable[i].name,
+			value = i,
+			desc = imgPathMenu:format(imgValue) .. imgPathMenu:format(MyAnimalsTable[i].sex)
+		}
+	end
+
+
+	VORPMenu.Open('default', GetCurrentResourceName(), "MyAnimalsMenu",
+		{
+			title    = _U('Animals'),
+			subtext  = _U('Animals'),
+			align    = "top-center",
+			elements = elements,
+		},
+
+		function(data, menu)
+			for i = 1, #elements do
+				if (data.current.value == elements[i].value) then
+					AnimalMenu(i)
+				end
+			end
+		end,
+
+    function(data, menu)
+        menu.close()
+    end)
+end 
+
+function AnimalMenu(index)
+	local elements = {}
+
+	if MyAnimalsTable[index].actif == 1 then
+		elements[#elements+1] = {
+			label = _U('Despawn'),
+			value = "despawn",
+			desc = _U('Despawn')
+		}
+	else
+		elements[#elements+1] = {
+			label = _U('Spawning'),
+			value = "spawning",
+			desc = _U('Spawning')
+		}
+	end
+
+	if MyAnimalsTable[index].xp > (Config.FullGrownXp / 2) then
+		elements[#elements+1] = {
+			label = _U('GiveAway'),
+			value = "giveaway",
+			desc = _U('GiveAway')
+		}
+	end
+
+	VORPMenu.Open('default', GetCurrentResourceName(), "AnimalMenu",
+		{
+			title    = MyAnimalsTable[index].name,
+			subtext  = MyAnimalsTable[index].name,
+			align    = "top-center",
+			elements = elements,
+		},
+
+		function(data, menu)
+			if (data.current.value == "spawning") then
+				TriggerEvent('sultan_animal_farm:spawnanimal', MyAnimalsTable[index].animal, MyAnimalsTable[index].skin, true, 0, canTrack, MyAnimalsTable[index].name)
+				VORPMenu.CloseAll()
+				MainMenu()
+			elseif (data.current.value == "despawn") then
+				TriggerEvent('sultan_animal_farm:removeanimal', MyAnimalsTable[index].name)
+			elseif (data.current.value == "giveaway") then
+				TriggerEvent('sultan_animal_farm:ConfirmSelling', index)
+			end
+		end,
+
+    function(data, menu)
+        menu.close()
+    end)
+end 
+
+function BuyAnimalsMenu()
+	local elements = {}
+
+	for i = 1, #pets do
+		local imgValue = pets[i].img
+
+		local acheck = checkAvailability(pets[i])
+		if acheck == true then
+			elements[#elements + 1] = {
+				label = pets[i]['Text'],
+				value = i,
+				desc = imgPathMenu:format(imgValue)
+			}
+		end
+	end
+
+
+	VORPMenu.Open('default', GetCurrentResourceName(), "BuyAnimalsMenu",
+		{
+			title    = _U('BuyAnimal'),
+			subtext  = _U('BuyAnimal'),
+			align    = "top-center",
+			elements = elements,
+		},
+
+		function(data, menu)
+			for i = 1, #elements do
+				if (data.current.value == elements[i].value) then
+					SelectTypeMenu(i)
+				end
+			end
+		end,
+
+    function(data, menu)
+        menu.close()
+    end)
+end 
+
+function SelectTypeMenu(index)
+	local elements = {}
+
+	for i = 1, #pets[index].Sex do
+		local imgValue = pets[index].Sex[i]
+
+		elements[#elements + 1] = {
+			label = pets[index].Sex[i],
+			value = i,
+			desc = imgPathMenu:format(imgValue)
+		}
+	end
+
+	VORPMenu.Open('default', GetCurrentResourceName(), "SelectTypeMenu",
+		{
+			title    = _U('SelectSex'),
+			subtext  = _U('SelectSex'),
+			align    = "top-center",
+			elements = elements,
+		},
+
+		function(data, menu)
+			if (data.current.value == "Male") then
+				TriggerEvent('sultan_animal_farm:EnterAnimalName', index, "male")
+			else
+				TriggerEvent('sultan_animal_farm:EnterAnimalName', index, "female")
+			end
+		end,
+
+    function(data, menu)
+        menu.close()
+    end)
+end 
+
 Citizen.CreateThread(function()
 	local indice = nil
 	WarMenu.CreateMenu('main', '')
@@ -255,8 +466,7 @@ Citizen.CreateThread(function()
 					waitTime = 1
 					DisplayHelp(_U('Shoptext'), 0.50, 0.95, 0.6, 0.6, true, 255, 255, 255, 255, true)
 					if IsControlJustPressed(0, keys[Config.TriggerKeys.OpenShop]) then
-						WarMenu.SetTitle('main', shop.Name)
-						WarMenu.OpenMenu('main')
+						MainMenu()
 						CurrentZoneActive = index
 					end
 				end
@@ -301,7 +511,7 @@ Citizen.CreateThread(function()
 					end
 
 					-- GRAZING 
-					if Entity(currentPetPeds[i]).state.grazing == true then
+					if Entity(currentPetPeds[i]).state.grazing == true and Entity(currentPetPeds[i]).state.xp < Config.FullGrownXp then
 
 						local luck = math.random(Entity(currentPetPeds[i]).state.difficulty)
 						if luck == Entity(currentPetPeds[i]).state.difficulty then
@@ -412,6 +622,11 @@ end
 
 function updatePrompts(entity, player_coords, restricted_towns)
 
+	-- PROMPT LABEL
+	local label = CreateVarString(10, 'LITERAL_STRING', Entity(entity).state.name)
+	local group = Citizen.InvokeNative(0xB796970BD125FCE8, entity, Citizen.ResultAsLong())
+	PromptSetActiveGroupThisFrame(group, label)
+
 	-- FOLLOW PROMPT TEXT
 	if Entity(entity).state.mother ~= 'nobody' and currentPetPeds[findPed(Entity(entity).state.mother)] and Entity(entity).state.xp < (Config.FullGrownXp/2) then
 		local str = CreateVarString(10, 'LITERAL_STRING', _U('FollowMother'))
@@ -473,9 +688,9 @@ Citizen.CreateThread(function()
 		-- ANIMAL DESPAWN WITH DISTANCE
 		for i = 1, #currentPetPeds do
 			local animalCoords = GetEntityCoords(currentPetPeds[i])
-
+			
 			if currentPetPeds[i] then
-				if GetDistanceBetweenCoords(playerCoords, animalCoords, true) > 100.0 then
+				if GetDistanceBetweenCoords(playerCoords, animalCoords, true) > 10000000.0 then
 					TriggerEvent('sultan_animal_farm:removeanimal', Entity(currentPetPeds[i]).state.name)
 
 				elseif IsEntityDead( currentPetPeds[i]) and Config.PetAttributes.CompleteDeath == true then
@@ -491,6 +706,7 @@ Citizen.CreateThread(function()
             local result, entity = GetPlayerTargetEntity(id)
 			
 			if not IsEntityDead( entity ) and checkIfBeast(entity) == true then
+				
 				updatePrompts(entity, playerCoords, restricted_towns)
 
 				if PromptHasStandardModeCompleted(GrazePrompt[entity]) then
@@ -846,7 +1062,7 @@ function followOwner(currentPetPed, PlayerPedId, isInShop)
 	ClearPedTasks(currentPetPed)
 	ClearPedSecondaryTask(currentPetPed)
 	
-	TaskFollowToOffsetOfEntity(currentPetPed, PlayerPedId, 0.0, -1.5, 0.0, 1.0, -1,  Config.PetAttributes.FollowDistance * 100000000, 1, 1, 0, 0, 1)
+	TaskFollowToOffsetOfEntity(currentPetPed, PlayerPedId, 0.0, -1.5, 0.0, 3.0, -1,  Config.PetAttributes.FollowDistance * 100000000, 1, 1, 0, 0, 1)
 	if isInShop then
 		Citizen.InvokeNative(0x489FFCCCE7392B55, currentPetPed, PlayerPedId)
 	end
@@ -859,7 +1075,7 @@ function followMother(child, mother)
 	FreezeEntityPosition(child,false)
 	ClearPedTasks(child)
 	ClearPedSecondaryTask(child)
-	TaskFollowToOffsetOfEntity(child, mother, 0.0, -1.5, 0.0, 1.0, -1,  Config.PetAttributes.FollowDistance * 100000000, 1, 1, 0, 0, 1)
+	TaskFollowToOffsetOfEntity(child, mother, 0.0, -1.5, 0.0, 3.0, -1,  Config.PetAttributes.FollowDistance * 100000000, 1, 1, 0, 0, 1)
 end
 
 function petStay(currentPetPed)
@@ -975,15 +1191,18 @@ AddEventHandler('sultan_animal_farm:EnterAnimalName', function(indice, sex)
 	TriggerEvent('vorpinputs:advancedInput', json.encode(myInput), function(name)
 		if name ~= '' and name ~= ' ' then -- make sure its not empty
 			TriggerServerEvent('sultan_animal_farm:buyanimal', pets[indice]['Param'], name, pets[indice]['SubText'], sex)
+			VORPMenu.CloseAll()
 		end
 	end)
 end)
 
 RegisterNetEvent('sultan_animal_farm:drawMyAnimalsMenu')
-AddEventHandler('sultan_animal_farm:drawMyAnimalsMenu', function(animals)
-	WarMenu.OpenMenu('my_animals')
+AddEventHandler('sultan_animal_farm:drawMyAnimalsMenu', function(animals, openmenu)
 	MyAnimalsTable = {}
 	MyAnimalsTable = animals
+	if openmenu == true then
+		MyAnimalsMenu()
+	end
 end)
 
 RegisterNetEvent('sultan_animal_farm:UpdateAnimalsClient')
@@ -1057,6 +1276,7 @@ function spawnAnimals (model, player, x, y, z, h, skin, PlayerPedId, isdead, iss
 		else
 			followOwner(currentPetPeds[currentPetPedIndex], player, isshop)
 		end
+
 		AddFollowPrompts(currentPetPeds[currentPetPedIndex])
 		AddGrazePrompt(currentPetPeds[currentPetPedIndex])
 		AddStayPrompts(currentPetPeds[currentPetPedIndex])
@@ -1228,9 +1448,9 @@ AddEventHandler('onResourceStart', function(resource)
 	end
 end)
 
-
 AddEventHandler('onResourceStop', function(resource)
 	if resource == GetCurrentResourceName() then
+		VORPMenu.CloseAll()
 		TriggerEvent( 'sultan_animal_farm:removeanimal' )
 		if fetchedObj ~= nil then
 			DeleteEntity(fetchedObj)

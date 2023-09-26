@@ -10,9 +10,9 @@ ConvarFramework = "vorp" --IMPORTANT: Put either "redem" or "vorp" depending on 
 
 
 client_scripts {
-    'client/warmenu.lua',
     'client/client.lua',
-    'config.lua'
+    'config.lua',
+    'images/*.png'
 }
 
 

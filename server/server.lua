@@ -27,7 +27,7 @@ AddEventHandler('sultan_animal_farm:sellpet', function(name, difficulty, basepri
 	exports.ghmattimysql:execute("DELETE FROM animal_farm WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", {["identifier"] = u_identifier, ['charidentifier'] = u_charid, ['name'] = name})
 	Character.addCurrency(0, amountmoney)
 	TriggerClientEvent('sultan_animal_farm:removeanimal', _src, name)
-	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , _U('YouSold') .. "~o~" .. name .. _U('For') .. amountmoney .. "$", "toast_awards_set_c", "awards_set_c_001", 4000)
+	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , _U('YouSold') .. "~o~" .. name .. _U('For') .. amountmoney .. "$", "toast_awards_set_c", "awards_set_c_001", 4000, "COLOR_YELLOWSTRONG")
 end)
 
 RegisterServerEvent('sultan_animal_farm:deadAnimal')
@@ -40,7 +40,7 @@ AddEventHandler('sultan_animal_farm:deadAnimal', function(name)
 
 	exports.ghmattimysql:execute("DELETE FROM animal_farm WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", {["identifier"] = u_identifier, ['charidentifier'] = u_charid, ['name'] = name})
 	TriggerClientEvent('sultan_animal_farm:removeanimal', _src, name)
-	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , "~o~" .. name .. _U('IsDead'), "toast_awards_set_c", "awards_set_c_001", 4000)
+	TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , "~o~" .. name .. _U('IsDead'), "toast_awards_set_c", "awards_set_c_001", 4000, "COLOR_YELLOWSTRONG")
 end)
 
 
@@ -64,11 +64,11 @@ AddEventHandler('sultan_animal_farm:growUpAnimal', function(name)
 		if newXp < Config.FullGrownXp then
 			local Parameters = { ['identifier'] = u_identifier, ['charidentifier'] = u_charid,  ['name'] = name, ['addedXp'] = Config.XpPerFeed }
 			exports.ghmattimysql:execute("UPDATE animal_farm SET xp = xp + @addedXp WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", Parameters, function(result) end)		
-			TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , name .. _U('GrowedUp') .. "~COLOR_ORANGE~"..newXp.." ~o~/ " .. Config.FullGrownXp .. " xp", "toast_awards_set_c", "awards_set_c_001", 4000)
+			TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , name .. _U('GrowedUp') .. "~COLOR_ORANGE~"..newXp.." ~o~/ " .. Config.FullGrownXp .. " xp", "toast_awards_set_c", "awards_set_c_001", 4000, "COLOR_YELLOWSTRONG")
 		else		
 			local Parameters = { ['identifier'] = u_identifier, ['charidentifier'] = u_charid, ['name'] = name, ['fullXp'] = Config.FullGrownXp }	
 			exports.ghmattimysql:execute("UPDATE animal_farm SET xp = @fullXp  WHERE identifier = @identifier AND charidentifier = @charidentifier AND name = @name", Parameters, function(result) end)		
-			TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , name .. "~COLOR_ORANGE~" .. _U('FullGrowReached'), "toast_awards_set_c", "awards_set_c_001", 4000)
+			TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , name .. "~COLOR_ORANGE~" .. _U('FullGrowReached'), "toast_awards_set_c", "awards_set_c_001", 4000, "COLOR_YELLOWSTRONG")
 		end	
 	end)	
 end)
@@ -129,7 +129,7 @@ AddEventHandler('sultan_animal_farm:getChild', function (name, animaltype, anima
 						TriggerClientEvent('sultan_animal_farm:updateAnimals', _src)
 						Wait(2000)
 						TriggerClientEvent('sultan_animal_farm:spawnanimal', _src,  animal, skin, false, 0, canTrack, name, mothername)
-						TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , "~COLOR_ORANGE~" .. name .. "~COLOR_WHITE~" .. _U('NewChild'), "toast_awards_set_c", "awards_set_c_001", 4000)
+						TriggerClientEvent("vorp:NotifyLeft",_src, "~e~" .. _U('Shepherd') , "~COLOR_ORANGE~" .. name .. "~COLOR_WHITE~" .. _U('NewChild'), "toast_awards_set_c", "awards_set_c_001", 4000, "COLOR_YELLOWSTRONG")
 					end)
 				end
 			end)
@@ -228,9 +228,7 @@ AddEventHandler('sultan_animal_farm:getanimals', function(openmenu)
 	exports.ghmattimysql:execute( "SELECT * FROM animal_farm WHERE identifier = @identifier  AND charidentifier = @charidentifier", Parameters, function(result)
 		if(#result ~= 0)then
 			buffer = result
-			if openmenu == true then 
-            	TriggerClientEvent( 'sultan_animal_farm:drawMyAnimalsMenu', _src, buffer )
-			end
+            TriggerClientEvent( 'sultan_animal_farm:drawMyAnimalsMenu', _src, buffer, openmenu)
 		else
 			TriggerClientEvent( 'UI:DrawNotification', _src, _U('NoPet') )
 		end
