@@ -41,7 +41,8 @@ With this script players are able to down beasts, grow up them and sell them dep
 1. Put sultan_animal_farm in your `resources` folder
 2. Enter `ensure sultan_animal_farm` in your server.cfg
 3. Import the `animal_farm.sql`
-4. Go through `config.lua` before restarting your server
+4. Move all image files in images folder to your inventory image folder (`vorp_inventory/html/img/items` for VORP_INVENTORY)
+5. Go through `config.lua` before restarting your server
 
 ## Dependencies
 
