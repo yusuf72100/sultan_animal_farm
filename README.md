@@ -47,7 +47,9 @@ With this script players are able to down beasts, grow up them and sell them dep
 ## Dependencies
 
 • vorp_core
+
 • vorp_inventory
+
 • vorp_menu
 
 ## TODO
