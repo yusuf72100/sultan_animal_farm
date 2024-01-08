@@ -8,7 +8,7 @@ https://youtu.be/ullux0Nfcew
 
 ## Description
 
-With this script players are able to down beasts, grow up them and sell them depending of them quality and reproduct them with an other animal (reproduction is completly random and depend of beasts quality).
+With this script players are able to down beasts, grow up, sell depending of the animal's quality and reproduct beasts with an other animal (reproduction is completly random and depend of beasts quality).
 
 ## Features
 
